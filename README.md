@@ -59,7 +59,6 @@ import json
 <br>
 When a user inputs a question, its embedding is computed, the nearest chunks are retrieved, and the Gemini API is queried to generate an answer. The combined approach of vector retrieval and generative AI ensures that responses are both contextually relevant and coherent.
 <br><br>
-
 7. Command-Line Interface (CLI)
 <br><br>
 The project includes an interactive CLI where users can ask questions and receive responses in real time.This interface allows for dynamic user interaction and makes it easy to query the system without additional UI development.
