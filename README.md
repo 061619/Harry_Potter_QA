@@ -28,21 +28,29 @@ pip install pdfplumber sentence-transformers faiss-cpu numpy pydantic python-dot
 <br><br>
 1. PDF Parsing
 <br><br>
-The project begins by extracting text from the provided PDF book using pdfplumber. The function parse_pdf(file_path) reads the entire text from the PDF document.
+The project begins by extracting text from the provided PDF book using pdfplumber. The function parse_pdf(file_path) reads the entire text from the PDF document. PDF files often contain complex layouts, headers, footers, and multi-column text structures that can make text extraction difficult. pdfplumber is designed to handle such complexities and extract text in a structured manner.
+
+The function iterates over each page, concatenating the extracted text into a single string, ensuring that all content is captured for subsequent processing.
 <br><br>
 2. Text Chunking and Preprocessing
 <br><br>
-The extracted text is then split into smaller overlapping chunks for better semantic clarity. This improves retrieval efficiency and context retention when querying the system.
+The extracted text is then split into smaller overlapping chunks for better semantic clarity. When dealing with long-form text, direct retrieval can be inefficient, as querying an entire book would result in vague or incorrect matches. Chunking ensures that each section retains contextual meaning while being small enough for effective retrieval.
+
+Overlapping chunks help maintain sentence continuity across boundaries, preventing loss of context. This is particularly useful for vector-based retrieval, where smaller, meaningful segments improve the accuracy of semantic search.
 <br><br>
 3. Creating Embeddings
 <br><br>
-Each chunk is transformed into a dense vector representation using all-MiniLM-L6-v2, a model from Sentence Transformers. These embeddings enable semantic search over the text.
+Each chunk is transformed into a dense vector representation using all-MiniLM-L6-v2, a pre-trained model from Sentence Transformers. These embeddings convert natural language into high-dimensional numerical representations, making it easier to compare and retrieve semantically similar content.
+
+Embeddings capture contextual meaning, allowing queries to be matched with relevant text segments, even if they do not share exact words. This enhances the system’s ability to understand user questions and retrieve the most relevant information.
 <br><br>
 from sentence_transformers import SentenceTransformer
 <br><br>
 4. FAISS Indexing
 <br><br>
-FAISS (Facebook AI Similarity Search) is used to store and quickly retrieve the most relevant text chunks based on user queries.
+FAISS (Facebook AI Similarity Search) is used to store and quickly retrieve the most relevant text chunks based on user queries. FAISS is optimized for large-scale vector search and enables efficient nearest-neighbor retrieval.
+
+By indexing chunk embeddings, the system can rapidly find text segments that closely match the user’s question. This significantly improves search speed and accuracy compared to traditional keyword-based search.
 <br><br>
 import faiss<br>
 import numpy as np
@@ -50,18 +58,20 @@ import numpy as np
 5. Querying Gemini API
 <br><br>
 When a user asks a question, the system retrieves the top 5 most relevant text chunks using FAISS and then sends this combined context to Gemini API for answer generation.
+
+The Gemini API, developed by Google, leverages large language models (LLMs) to generate human-like responses based on provided context. By supplying retrieved book chunks as input, the API can generate answers that remain faithful to the source material while maintaining coherence.
 <br><br>
 import requests<br>
 import json
 <br><br>
 6. End-to-End Query Handling
 <br><br>
-When a user inputs a question, its embedding is computed, the nearest chunks are retrieved, and the Gemini API is queried to generate an answer.
+When a user inputs a question, its embedding is computed, the nearest chunks are retrieved, and the Gemini API is queried to generate an answer. The combined approach of vector retrieval and generative AI ensures that responses are both contextually relevant and coherent.
 <br><br>
 
 7. Command-Line Interface (CLI)
 <br><br>
-The project includes an interactive CLI where users can ask questions and receive responses in real time.
+The project includes an interactive CLI where users can ask questions and receive responses in real time.This interface allows for dynamic user interaction and makes it easy to query the system without additional UI development.
 <br><br>
 API Key Configuration
 <br><br>
